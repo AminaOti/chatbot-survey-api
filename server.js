@@ -1,17 +1,12 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const axios = require("axios");
-
+const routes = require("./routes/routes.js");
 dotenv.config({ path: "./config/config.env" });
-
-const app = express();
 const PORT = process.env.PORT | 3000;
 
-app.get("/api/users", async (req, res) => {
-  const chatId = req.query.chatid;
-
-  res.send(`Thank you for you questions for chatId \n ${chatId}`);
-});
+const app = express();
+app.use(express.json());
+app.use("/api/chatbot/", routes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
