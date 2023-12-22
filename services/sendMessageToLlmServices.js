@@ -3,28 +3,29 @@ const axios = require("axios");
 const {
   generateObjectForParams,
   generateObjectForFirstQuestion,
+  generateObjectAfterFirstQuestion,
 } = require("../utils/generateObjects");
 
 dotenv.config({ path: "./config/config.env" });
-const BEARER_TOKEN = process.env.LLM_BEARER_TOKEN;
-const MODEL_ID = process.env.LLM_MODEL_ID;
-const URL = process.env.LLM_URL; //"https://bam-api.res.ibm.com/v2/text/chat";
+let conversationId = "";
+let parentId = "";
 
-const sendMessageToLlm = async (
-  modelId,
-  bearatoken,
-  url,
-  message,
-  messageId
-) => {
-  const data = generateObjectForFirstQuestion(modelId, message);
+const sendMessageToLlm = async (modelId, bearatoken, url, message) => {
+  const data =
+    conversationId.length === 0
+      ? generateObjectForFirstQuestion(modelId, message)
+      : generateObjectAfterFirstQuestion(
+          modelId,
+          message,
+          conversationId,
+          parentId
+        );
+
   const params = generateObjectForParams(bearatoken);
 
   const response = await axios.post(url, data, params);
-
-  console.log(`parentId: ${response.data.id}`);
-  console.log(`conversationId: ${response.data.conversation_id}`);
-  console.log(`generated test: ${response.data.results[0].generated_text}`);
+  conversationId = response.data.conversation_id;
+  parentId = response.data.id;
 
   return {
     parentId: response.data.id,

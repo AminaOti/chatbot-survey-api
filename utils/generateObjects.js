@@ -32,6 +32,42 @@ const generateObjectForFirstQuestion = (modelId, message) => {
   };
 };
 
+const generateObjectAfterFirstQuestion = (
+  modelId,
+  message,
+  conversationId,
+  parentId
+) => {
+  return {
+    model_id: modelId,
+    conversation_id: conversationId,
+    parent_id: parentId,
+    messages: [
+      {
+        role: "user",
+        content: message,
+      },
+    ],
+    parameters: {
+      decoding_method: "greedy",
+      min_new_tokens: 1,
+      max_new_tokens: 200,
+    },
+    moderations: {
+      hap: {
+        threshold: 0.75,
+        input: true,
+        output: true,
+      },
+      stigma: {
+        threshold: 0.75,
+        input: true,
+        output: true,
+      },
+    },
+  };
+};
+
 const generateObjectForParams = (bearatoken) => {
   return {
     params: {
@@ -47,4 +83,5 @@ const generateObjectForParams = (bearatoken) => {
 module.exports = {
   generateObjectForParams,
   generateObjectForFirstQuestion,
+  generateObjectAfterFirstQuestion,
 };
