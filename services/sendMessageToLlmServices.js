@@ -3,7 +3,7 @@ const axios = require("axios");
 const {
   generateObjectForParams,
   generateObjectForFirstQuestion,
-} = require("./sendMessageToLmm.js");
+} = require("../utils/generateObjects");
 
 dotenv.config({ path: "./config/config.env" });
 const BEARER_TOKEN = process.env.LLM_BEARER_TOKEN;
@@ -34,6 +34,3 @@ const sendMessageToLlm = async (
 };
 
 module.exports = sendMessageToLlm;
-
-// const message = "hi what colour is the sky?";
-// sendDataToLmm(MODEL_ID, BEARER_TOKEN, URL, message);
