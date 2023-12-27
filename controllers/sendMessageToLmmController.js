@@ -6,10 +6,16 @@ const URL = process.env.LLM_URL;
 
 exports.sendMessageToLmmController = async (req, res) => {
   const message = req.body.message;
-  const chatId = req.body.chatId;
+  const isLastMessage = req.body.isLastMessage;
 
-  const response = await sendMessageToLlm(MODEL_ID, BEARER_TOKEN, URL, message);
+  const response = await sendMessageToLlm(
+    req,
+    MODEL_ID,
+    BEARER_TOKEN,
+    URL,
+    message,
+    isLastMessage
+  );
 
-  console.log(`${response}`);
   res.status(200).send(response);
 };
