@@ -7,12 +7,30 @@ const {
 } = require("../utils/generateObjects");
 
 dotenv.config({ path: "./config/config.env" });
-let conversationId = "";
-let parentId = "";
 
-const sendMessageToLlm = async (modelId, bearatoken, url, message) => {
+const setCoversationAndParentId = (req, conversationId, parentId) => {
+  req.session.conversationId = conversationId;
+  req.session.parentId = parentId;
+};
+
+const resetCoversationAndParentId = (req) => {
+  req.session.conversationId = "";
+  req.session.parentId = "";
+};
+
+const sendMessageToLlm = async (
+  req,
+  modelId,
+  bearatoken,
+  url,
+  message,
+  isLastMessage
+) => {
+  let conversationId = req.session.conversationId || "";
+  let parentId = req.session.parentId || "";
+
   const data =
-    conversationId.length === 0
+    conversationId === ""
       ? generateObjectForFirstQuestion(modelId, message)
       : generateObjectAfterFirstQuestion(
           modelId,
@@ -24,8 +42,18 @@ const sendMessageToLlm = async (modelId, bearatoken, url, message) => {
   const params = generateObjectForParams(bearatoken);
 
   const response = await axios.post(url, data, params);
-  conversationId = response.data.conversation_id;
-  parentId = response.data.id;
+
+  if (conversationId === "" || parentId === "") {
+    setCoversationAndParentId(
+      req,
+      response.data.conversation_id,
+      response.data.id
+    );
+  }
+
+  if (isLastMessage === true) {
+    resetCoversationAndParentId(req);
+  }
 
   return {
     parentId: response.data.id,
