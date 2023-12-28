@@ -9,6 +9,7 @@ const {
 dotenv.config({ path: "./config/config.env" });
 
 const setCoversationAndParentId = (req, conversationId, parentId) => {
+  console.log("hello");
   req.session.conversationId = conversationId;
   req.session.parentId = parentId;
 };
@@ -28,6 +29,10 @@ const sendMessageToLlm = async (
 ) => {
   let conversationId = req.session.conversationId || "";
   let parentId = req.session.parentId || "";
+
+  console.log(`------------------------------`);
+
+  console.log(`conversationId ${req.session.conversationId}`);
 
   const data =
     conversationId === ""
@@ -55,10 +60,15 @@ const sendMessageToLlm = async (
     resetCoversationAndParentId(req);
   }
 
+  console.log(`req.session.conversationId ${req.session.conversationId}`);
+  console.log(`req ${JSON.stringify(req.session)}`);
+  console.log(`cookies ${JSON.stringify(req.cookies)}`);
+
   return {
     parentId: response.data.id,
     converstationId: response.data.conversation_id,
     response: response.data.results[0].generated_text,
+    cookies: req.cookies,
   };
 };
 

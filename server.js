@@ -10,7 +10,8 @@ const cors = require("cors");
 const app = express();
 app.use(
   cors({
-    origin: "*",
+    origin: "http://localhost:5173", // Replace with your frontend URL
+    credentials: true, // Allow credentials (cookies, authorization headers)
   })
 );
 
@@ -22,17 +23,36 @@ app.use(
   })
 );
 
-let counter = 0;
-
 app.use(express.json());
 app.use("/api/chatbot/", routes);
 
 app.get("/", (req, res) => {
+  console.log(req.headers.cookie);
   res.status(200).json({
     success: "true",
     message: "Congratulations, you have hit the endpoint for the chatbotApi",
   });
 });
+
+app.post("/setSessionName", async (req, res) => {
+  try {
+    console.log(req.body.name);
+    req.session.name = req.body.name;
+    res.send({ message: "saved" }).status(201);
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+    res.send(error);
+  }
+});
+
+// app.get("/set-cookie", (req, res) => {
+//   console.log(`1 ${req.headers.cookie}`);
+//   res.cookie("myCookie", "cookieValue", { maxAge: 900000, httpOnly: true });
+//   console.log(`cookies ${JSON.stringify(req.cookies)}`);
+//   console.log(`2 ${req.headers.cookie}`);
+//   res.send("Cookie has been set");
+// });
 
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);

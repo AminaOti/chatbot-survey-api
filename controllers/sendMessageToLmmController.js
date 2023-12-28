@@ -8,6 +8,7 @@ exports.sendMessageToLmmController = async (req, res) => {
   const message = req.body.message;
   const isLastMessage = req.body.isLastMessage;
 
+  console.log(`is last message: ${isLastMessage}`);
   const response = await sendMessageToLlm(
     req,
     MODEL_ID,
